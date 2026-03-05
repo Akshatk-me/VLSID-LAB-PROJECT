@@ -1,0 +1,13 @@
+# Ignore Vivado temporary files
+*.jou
+*.log
+*.str
+.Xil/
+*.tmp/
+*.hw/
+*.ip_user_files/
+*.sim/
+*.runs/
+*.cache/
+# Ignore the actual local Vivado project file
+/vivado_local_proj/
