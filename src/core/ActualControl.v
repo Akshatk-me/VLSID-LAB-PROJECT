@@ -1,3 +1,29 @@
+module ActualControl (
+    input  wire [6:0] opcode,
+    input  wire [2:0] funct3,
+    input  wire [6:0] funct7,
+    
+    // Execution Stage (EX)
+    output reg        alu_src,
+    output reg [3:0]  alu_op,
+    output reg        is_mul,
+    
+    // Memory Stage (MEM)
+    output reg        mem_read,
+    output reg        mem_write,
+    output reg        branch,
+    output reg        jump,
+    
+    // Writeback Stage (WB)
+    output reg        reg_write,
+    output reg        mem_to_reg,
+    
+    // CSR/System
+    output reg        csr_write,
+    output reg        csr_read,
+    output reg        is_ecall
+);
+
 always @(*) begin
     // 1. DEFAULT SIGNALS (Do not delete these!)
     // Set all your control signals to 0 here...

@@ -1,0 +1,11 @@
+# === Verible Waivers Configuration ===
+
+# 1. Ignore EVERYTHING inside Vivado's auto-generated project folders
+waive --rule=.* --location="project/.*"
+
+# 2. Ignore line length restrictions in your testbenches (often long due to vectors/displays)
+waive --rule=line-length --location="sim/.*"
+
+# 3. Specific module waivers
+# Example: If your MultiCycleMultiplier has some intentional blocking assignments
+# waive --rule=always-ff-non-blocking --location="src/core/MultiCycleMultiplier.v"

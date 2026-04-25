@@ -1,0 +1,16 @@
+# === Verible Linter Configuration ===
+# Applied globally to the project
+
+# --- Formatting & Style ---
++line-length=length:120     # Standard modern line length (default is usually 100)
+-no-tabs                    # Disable if you have legacy code or Xilinx files with tabs
++generate-label             # Enforce labels on generate blocks (helps with debugging)
+
+# --- Best Practices ---
++always-comb                # Enforce using always_comb instead of always @* in SV
++always-ff-non-blocking     # Enforce non-blocking (<=) assignments in sequential logic
++module-begin-block         # Require begin/end blocks inside modules for readability
+-macro-name-style           # Disabled: Allows both uppercase and lowercase macros
+
+# --- Naming Conventions ---
++parameter-name-style=localparam_style:CamelCase

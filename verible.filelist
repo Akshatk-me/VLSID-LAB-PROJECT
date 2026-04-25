@@ -1,0 +1,12 @@
+# === Project Include Directories ===
+# Tells Verible where to look for `include "defines.vh"
+
++incdir+src
++incdir+src/core
++incdir+src/peripherals
++incdir+src/mem
+
+find src -type f \( -name "*.v" -o -name "*.sv" \) >> verible.filelist
+
+# You can also define global macros here if needed for linting:
+# +define+SIMULATION

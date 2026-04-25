@@ -153,9 +153,10 @@ module uart_tx (
         end else begin
 
             if (start && !busy) begin
-                shift_reg <= {1'b1, data_in, 1'b0}; // stop, data, start
-                busy      <= 1;
-                counter   <= baud_div - 1;
+                shift_reg <= {1'b1, data_in}; // stop, data
+		tx	  <= 1'b0; 
+		busy 	  <= 1; 
+		counter	  <= baud_div - 1; 
                 bit_index <= 0;
             end
 
@@ -165,9 +166,8 @@ module uart_tx (
                     shift_reg <= shift_reg >> 1;
                     counter <= baud_div - 1;
 
-                    if (bit_index == 9) begin
+                    if (bit_index == 8) begin
                         busy <= 0;
-                        tx   <= 1;
                     end else begin
                         bit_index <= bit_index + 1;
                     end

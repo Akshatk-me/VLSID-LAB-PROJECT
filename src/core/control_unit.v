@@ -1,200 +1,201 @@
-module Control_Unit (
-    input  wire [6:0] opcode,
-    input  wire [2:0] funct3,
-    input  wire [6:0] funct7,
+`include "rv32i_defines.vh"
+module control_unit (
+    input  wire        clk,
+    input  wire        rst,
     
-    // Execution Stage (EX)
-    output reg        alu_src,
-    output reg [3:0]  alu_op,
-    output reg        is_mul,
+    input  wire [6:0]  opcode,
+    input  wire [2:0]  funct3,
+    input  wire [6:0]  funct7,
     
-    // Memory Stage (MEM)
-    output reg        mem_read,
-    output reg        mem_write,
-    output reg        branch,
-    output reg        jump,
+    output reg         pc_write,
+    output reg         ir_write,
+    output reg         reg_write,
     
-    // Writeback Stage (WB)
-    output reg        reg_write,
-    output reg        mem_to_reg,
+    output reg  [1:0]  alu_src_a,
+    output reg  [1:0]  alu_src_b,
+    output reg  [1:0]  result_src,
+    output reg  [1:0]  alu_op,      // → goes to ALUControl
+    output reg adr_src, // o for PC, 1 for ALU_Result
     
-    // CSR/System
-    output reg        csr_write,
-    output reg        csr_read,
-    output reg        is_ecall
+    output reg         mem_we,
+    output reg         mem_re
 );
 
-    // =========================
-    // ALU Operation Encoding
-    // =========================
-    localparam [3:0]
-        ALU_ADD  = 4'b0000,
-        ALU_SUB  = 4'b0001,
-        ALU_SLL  = 4'b0010,
-        ALU_SLT  = 4'b0011,
-        ALU_SLTU = 4'b0100,
-        ALU_XOR  = 4'b0101,
-        ALU_SRL  = 4'b0110,
-        ALU_SRA  = 4'b0111,
-        ALU_OR   = 4'b1000,
-        ALU_AND  = 4'b1001,
-        ALU_PASS = 4'b1010;
+    // -------------------------
+    // State Encoding (pure Verilog)
+    // -------------------------
+    reg [3:0] state, next_state;
 
+    localparam FETCH      = 4'd0;
+    localparam FETCH_WAIT = 4'd1;
+    localparam DECODE     = 4'd2;
+    localparam EXECUTE    = 4'd3;
+    localparam MEM        = 4'd4;
+    localparam MEM_WAIT   = 4'd5;
+    localparam WRITEBACK  = 4'd6;
+
+    // -------------------------
+    // Opcode Definitions
+    // -------------------------
+    localparam OP_RTYPE  = 7'b0110011;
+    localparam OP_ITYPE  = 7'b0010011;
+    localparam OP_LOAD   = 7'b0000011;
+    localparam OP_STORE  = 7'b0100011;
+    localparam OP_BRANCH = 7'b1100011;
+
+    // -------------------------
+    // State Register
+    // -------------------------
+    always @(posedge clk or posedge rst) begin
+        if (rst)
+            state <= FETCH;
+        else
+            state <= next_state;
+    end
+
+    // -------------------------
+    // Next State Logic
+    // -------------------------
     always @(*) begin
-        // =========================
-        // Default values
-        // =========================
-        alu_src    = 0;
-        alu_op     = ALU_ADD;
-        is_mul     = 0;
+        case (state)
+            FETCH:        next_state = FETCH_WAIT;
+            FETCH_WAIT:   next_state = DECODE;
 
-        mem_read   = 0;
-        mem_write  = 0;
-        branch     = 0;
-        jump       = 0;
+            DECODE: begin
+                case (opcode)
+                    OP_RTYPE,
+                    OP_ITYPE: next_state = EXECUTE;
 
+                    OP_LOAD,
+                    OP_STORE: next_state = EXECUTE;
+
+                    OP_BRANCH: next_state = EXECUTE;
+
+                    default: next_state = FETCH;
+                endcase
+            end
+
+            EXECUTE: begin
+                case (opcode)
+                    OP_LOAD,
+                    OP_STORE: next_state = MEM;
+
+                    OP_BRANCH: next_state = FETCH;
+
+                    default: next_state = WRITEBACK;
+                endcase
+            end
+
+            MEM:        next_state = MEM_WAIT;
+
+            MEM_WAIT: begin
+                if (opcode == OP_LOAD)
+                    next_state = WRITEBACK;
+                else
+                    next_state = FETCH;
+            end
+
+            WRITEBACK: next_state = FETCH;
+
+            default: next_state = FETCH;
+        endcase
+    end
+
+    // -------------------------
+    // Output Logic (NO LATCHES)
+    // -------------------------
+    always @(*) begin
+        // Defaults
+        pc_write   = 0;
+        ir_write   = 0;
         reg_write  = 0;
-        mem_to_reg = 0;
+        alu_src_a  = 0;
+        alu_src_b  = 0;
+        result_src = 0;
+        alu_op     = 2'b00;
+        mem_we     = 0;
+        mem_re     = 0;
 
-        csr_write  = 0;
-        csr_read   = 0;
-        is_ecall   = 0;
+        case (state)
 
-        // =========================
-        // Decode
-        // =========================
-        case (opcode)
-
-            // =====================
-            // R-TYPE
-            // =====================
-            7'b0110011: begin
-                reg_write = 1;
-                alu_src   = 0;
-
-                // M-extension (MUL)
-                if (funct7 == 7'b0000001) begin
-                    is_mul = 1;
-                end else begin
-                    case (funct3)
-                        3'b000: alu_op = (funct7[5]) ? ALU_SUB : ALU_ADD;
-                        3'b001: alu_op = ALU_SLL;
-                        3'b010: alu_op = ALU_SLT;
-                        3'b011: alu_op = ALU_SLTU;
-                        3'b100: alu_op = ALU_XOR;
-                        3'b101: alu_op = (funct7[5]) ? ALU_SRA : ALU_SRL;
-                        3'b110: alu_op = ALU_OR;
-                        3'b111: alu_op = ALU_AND;
-                    endcase
-                end
+            // FETCH
+            // -------------------------
+            FETCH: begin
+                mem_re    = 1;
+                alu_src_a = 2'b00; // PC
+                alu_src_b = 2'b10; // +4
             end
 
-            // =====================
-            // I-TYPE (ALU)
-            // =====================
-            7'b0010011: begin
-                reg_write = 1;
-                alu_src   = 1;
+            FETCH_WAIT: begin
+                mem_re   = 1;   // HOLD for BRAM
+                ir_write = 1;
+                pc_write = 1;
+            end
 
-                case (funct3)
-                    3'b000: alu_op = ALU_ADD;   // ADDI
-                    3'b010: alu_op = ALU_SLT;
-                    3'b011: alu_op = ALU_SLTU;
-                    3'b100: alu_op = ALU_XOR;
-                    3'b110: alu_op = ALU_OR;
-                    3'b111: alu_op = ALU_AND;
+            // DECODE
+            // -------------------------
+            DECODE: begin
+                // nothing
+            end
 
-                    3'b001: alu_op = ALU_SLL;
+            // EXECUTE
+            // -------------------------
+            EXECUTE: begin
+                case (opcode)
 
-                    3'b101: alu_op = (funct7[5]) ? ALU_SRA : ALU_SRL;
+                    OP_RTYPE: begin
+                        alu_src_a = 2'b01;
+                        alu_src_b = 2'b00;
+                        alu_op    = 2'b10;
+                    end
+
+                    OP_ITYPE: begin
+                        alu_src_a = 2'b01;
+                        alu_src_b = 2'b01;
+                        alu_op    = 2'b10;
+                    end
+
+                    OP_LOAD,
+                    OP_STORE: begin
+                        alu_src_a = 2'b01;
+                        alu_src_b = 2'b01;
+                        alu_op    = 2'b00;
+                    end
+
+                    OP_BRANCH: begin
+                        alu_src_a = 2'b01;
+                        alu_src_b = 2'b00;
+                        alu_op    = 2'b01;
+                        pc_write  = 1; // (later gate with condition)
+                    end
                 endcase
             end
 
-            // =====================
-            // LOAD
-            // =====================
-            7'b0000011: begin
-                reg_write  = 1;
-                alu_src    = 1;
-                mem_read   = 1;
-                mem_to_reg = 1;
-                alu_op     = ALU_ADD;
+            // MEM
+            // -------------------------
+            MEM: begin
+                if (opcode == OP_LOAD)
+                    mem_re = 1;
+                else if (opcode == OP_STORE)
+                    mem_we = 1;
             end
 
-            // =====================
-            // STORE
-            // =====================
-            7'b0100011: begin
-                alu_src   = 1;
-                mem_write = 1;
-                alu_op    = ALU_ADD;
+            MEM_WAIT: begin
+                if (opcode == OP_LOAD)
+                    mem_re = 1;
+                else if (opcode == OP_STORE)
+                    mem_we = 1;
             end
 
-            // =====================
-            // BRANCH
-            // =====================
-            7'b1100011: begin
-                branch  = 1;
-                alu_src = 0;
-
-                case (funct3)
-                    3'b000: alu_op = ALU_SUB;   // BEQ
-                    3'b001: alu_op = ALU_SUB;   // BNE
-                    3'b100: alu_op = ALU_SLT;   // BLT
-                    3'b101: alu_op = ALU_SLT;   // BGE
-                    3'b110: alu_op = ALU_SLTU;  // BLTU
-                    3'b111: alu_op = ALU_SLTU;  // BGEU
-                endcase
-            end
-
-            // =====================
-            // JAL
-            // =====================
-            7'b1101111: begin
-                jump      = 1;
+            // WRITEBACK
+            // -------------------------
+            WRITEBACK: begin
                 reg_write = 1;
-                alu_op    = ALU_ADD; // for PC+4 or PC+imm
-            end
 
-            // =====================
-            // JALR
-            // =====================
-            7'b1100111: begin
-                jump      = 1;
-                reg_write = 1;
-                alu_src   = 1;
-                alu_op    = ALU_ADD;
-            end
-
-            // =====================
-            // LUI
-            // =====================
-            7'b0110111: begin
-                reg_write = 1;
-                alu_src   = 1;
-                alu_op    = ALU_PASS;
-            end
-
-            // =====================
-            // AUIPC
-            // =====================
-            7'b0010111: begin
-                reg_write = 1;
-                alu_src   = 1;
-                alu_op    = ALU_ADD;
-            end
-
-            // =====================
-            // SYSTEM (CSR / ECALL)
-            // =====================
-            7'b1110011: begin
-                if (funct3 == 3'b000) begin
-                    is_ecall = 1;
-                end else begin
-                    csr_write = 1;
-                    csr_read  = 1;
-                    reg_write = 1;
-                end
+                if (opcode == OP_LOAD)
+                    result_src = 2'b01; // memory
+                else
+                    result_src = 2'b00; // ALU
             end
 
         endcase

@@ -5,9 +5,9 @@ module multicycle_mul (
     input  wire        start,
     input  wire [31:0] A,
     input  wire [31:0] B,
-    input  wire [1:0]  op_type,   // NEW
+    input  wire [1:0]  op_type,   
 
-    output reg  [63:0] result,
+    output reg  [31:0] result, // CHANGED: Standardized to 32-bit output for RV32
     output reg         done,
     output reg         busy
 );
@@ -28,7 +28,6 @@ module multicycle_mul (
     reg [63:0] product;
     reg [5:0]  count;
 
-    // NEW: sign + op storage
     reg        A_sign, B_sign;
     reg [1:0]  op_reg;
 
@@ -53,33 +52,16 @@ module multicycle_mul (
         end
     end
 
-	wire A_sign_w;
-	wire B_sign_w;
+    // FIXED: Removed duplicate declarations
+    wire A_sign_w = (op_type == MUL || op_type == MULH || op_type == MULHSU) ? A[31] : 1'b0;
+    wire B_sign_w = (op_type == MUL || op_type == MULH)                      ? B[31] : 1'b0;
 
-	wire [31:0] A_abs;
-	wire [31:0] B_abs;
+    wire [31:0] A_abs = A_sign_w ? (~A + 1'b1) : A;
+    wire [31:0] B_abs = B_sign_w ? (~B + 1'b1) : B;
 
-
-
-	assign A_sign_w = (op_type == MUL || op_type == MULH)   ? A[31] :
-                  (op_type == MULHSU)                   ? A[31] :
-                                                         1'b0;
-
-	assign B_sign_w = (op_type == MUL || op_type == MULH)   ? B[31] :
-                                                         1'b0;
-
-	assign A_abs = A_sign_w ? (~A + 1) : A;
-	assign B_abs = B_sign_w ? (~B + 1) : B;
-
-	wire A_sign_w;
-	wire B_sign_w;
-
-	assign A_sign_w = (op_type == MUL || op_type == MULH)   ? A[31] :
-			  (op_type == MULHSU)                   ? A[31] :
-								 1'b0;
-
-	assign B_sign_w = (op_type == MUL || op_type == MULH)   ? B[31] :
-                                                         1'b0;
+    // FIXED: Added the missing sign correction logic
+    // If the signs are different, two's complement the final product
+    wire [63:0] signed_product = (A_sign ^ B_sign) ? (~next_product + 1'b1) : next_product;
 
     // ----------------------------------------
     // Sequential logic
@@ -141,20 +123,16 @@ module multicycle_mul (
                 product      <= next_product;
                 multiplicand <= next_multiplicand;
                 multiplier   <= next_multiplier;
-                count        <= count + 1;
+                count        <= count + 1'b1;
 
                 if (next_multiplier == 0 || count == 31) begin
                     // --------------------------------
-                    // Final sign correction
-                    // --------------------------------
-                    
-                    // --------------------------------
-                    // Select result based on op
+                    // Select result based on op (Using corrected sign logic)
                     // --------------------------------
                     case (op_reg)
                         MUL:    result <= signed_product[31:0];
                         MULH:   result <= signed_product[63:32];
-                        MULHU:  result <= next_product[63:32];
+                        MULHU:  result <= next_product[63:32]; // Unsigned doesn't need sign correction
                         MULHSU: result <= signed_product[63:32];
                     endcase
 

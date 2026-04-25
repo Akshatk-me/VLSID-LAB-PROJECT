@@ -40,3 +40,45 @@ clean:
 	$(VIVADO_BATCH) $(SCRIPT) -tclargs clean
 	rm -rf .Xil/ *.jou *.log *.str *.pb project/
 	@echo "Clean complete! Repository is pristine."
+
+
+
+# ==============================================================================
+# Fast Simulation (Icarus Verilog)
+# ==============================================================================
+
+# ==============================================================================
+# Fast Simulation (Verilator)
+# ==============================================================================
+
+VERILATOR = verilator
+
+# Defaults (override from CLI)
+TOP   ?= riscv_coretb1
+SRC   ?= $(shell find src -name "*.sv")
+TB  ?= riscv_coretb1
+TB_FILE := $(shell find sim -name "$(TB).sv" -o -name "$(TB).v")
+SIM   ?= $(shell find sim -name "*.v")
+DEFS  ?=
+BUILD ?= build
+
+.PHONY: fastsim wave clean_vlt
+
+fastsim:
+	@echo "----------------------------------------"
+	@echo " Running Verilator Simulation"
+	@echo " TOP  = $(TOP)"
+	@echo " DEFS = $(DEFS)"
+	@echo "----------------------------------------"
+	$(VERILATOR) -Wall -Wno-fatal -Wno-DECLFILENAME --binary --trace \
+		--top-module $(TB) \
+		$(DEFS) \
+		$(SRC) $(TB_FILE) \
+		--Mdir $(BUILD)
+	./$(BUILD)/V$(TOP)
+
+wave:
+	gtkwave $(BUILD)/*.vcd &
+
+clean_vlt:
+	rm -rf $(BUILD)
