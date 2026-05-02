@@ -1,6 +1,6 @@
 module bram_wrapper #(
-    parameter int    DEPTH     = 1024,  // 1024 words = 4KB of memory
-    parameter string INIT_FILE = ""     // Used to load your Assembly code
+    parameter int    DEPTH     = 1024,          // 1024 words = 4KB of memory
+    parameter string INIT_FILE = "program.hex"  // Used to load your Assembly code
 ) (
     input logic              clk,
     input logic              rst,

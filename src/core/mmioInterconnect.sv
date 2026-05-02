@@ -149,34 +149,46 @@ module mmio_interconnect (
     // ============================================================
 
     logic is_waiting;
-    assign is_waiting         = (state == WAIT_PERIPHERAL);
+    assign is_waiting = (state == WAIT_PERIPHERAL);
 
     // Only the selected peripheral sees req_valid = 1
     assign bram_bus.req_valid = is_waiting && (latched_target == TGT_BRAM);
     assign uart_bus.req_valid = is_waiting && (latched_target == TGT_UART);
-    assign sha_bus.req_valid  = is_waiting && (latched_target == TGT_SHA);
+    assign sha_bus.req_valid = is_waiting && (latched_target == TGT_SHA);
     assign gpio_bus.req_valid = is_waiting && (latched_target == TGT_GPIO);
 
+    // ============================================================
+    // 7.5 Peripheral READY (ACK) — FIX
+    // ============================================================
+
+    assign bram_bus.ready = (state == WAIT_PERIPHERAL) && (latched_target == TGT_BRAM) && p_valid;
+
+    assign uart_bus.ready = (state == WAIT_PERIPHERAL) && (latched_target == TGT_UART) && p_valid;
+
+    assign sha_bus.ready = (state == WAIT_PERIPHERAL) && (latched_target == TGT_SHA) && p_valid;
+
+    assign gpio_bus.ready = (state == WAIT_PERIPHERAL) && (latched_target == TGT_GPIO) && p_valid;
+
     // Broadcast request data (req_valid acts as enable)
-    assign bram_bus.addr      = latched_addr;
-    assign bram_bus.wdata     = latched_wdata;
-    assign bram_bus.we        = latched_we;
-    assign bram_bus.be        = latched_be;
+    assign bram_bus.addr = latched_addr;
+    assign bram_bus.wdata = latched_wdata;
+    assign bram_bus.we = latched_we;
+    assign bram_bus.be = latched_be;
 
-    assign uart_bus.addr      = latched_addr;
-    assign uart_bus.wdata     = latched_wdata;
-    assign uart_bus.we        = latched_we;
-    assign uart_bus.be        = latched_be;
+    assign uart_bus.addr = latched_addr;
+    assign uart_bus.wdata = latched_wdata;
+    assign uart_bus.we = latched_we;
+    assign uart_bus.be = latched_be;
 
-    assign sha_bus.addr       = latched_addr;
-    assign sha_bus.wdata      = latched_wdata;
-    assign sha_bus.we         = latched_we;
-    assign sha_bus.be         = latched_be;
+    assign sha_bus.addr = latched_addr;
+    assign sha_bus.wdata = latched_wdata;
+    assign sha_bus.we = latched_we;
+    assign sha_bus.be = latched_be;
 
-    assign gpio_bus.addr      = latched_addr;
-    assign gpio_bus.wdata     = latched_wdata;
-    assign gpio_bus.we        = latched_we;
-    assign gpio_bus.be        = latched_be;
+    assign gpio_bus.addr = latched_addr;
+    assign gpio_bus.wdata = latched_wdata;
+    assign gpio_bus.we = latched_we;
+    assign gpio_bus.be = latched_be;
 
     // ============================================================
     // 8. Peripheral Response Mux (uses latched_target ONLY)

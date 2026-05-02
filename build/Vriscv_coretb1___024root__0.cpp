@@ -264,7 +264,8 @@ void Vriscv_coretb1___024root___nba_sequent__TOP__0(Vriscv_coretb1___024root* vl
                 __Vdly__riscv_coretb1__DOT__u_bram__DOT__state = 1U;
             }
         } else if ((1U == (IData)(vlSelfRef.riscv_coretb1__DOT__u_bram__DOT__state))) {
-            if (vlSymsp->TOP__riscv_coretb1__DOT__bram_bus.ready) {
+            if (((IData)(vlSymsp->TOP__riscv_coretb1__DOT__bram_bus.req_valid) 
+                 & (IData)(vlSelfRef.riscv_coretb1__DOT__u_interconnect__DOT__p_valid))) {
                 __Vdly__riscv_coretb1__DOT__u_bram__DOT__state = 0U;
             }
         }

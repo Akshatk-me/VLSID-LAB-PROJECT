@@ -575,21 +575,30 @@ void Vriscv_coretb1___024root__trace_chg_0_sub_0(Vriscv_coretb1___024root* vlSel
                                      >> 9U))),32);
         bufp->chgBit(oldp+139,(vlSymsp->TOP__riscv_coretb1__DOT__data_bus.rdata_valid));
         bufp->chgBit(oldp+140,((1U & (~ (IData)(vlSelfRef.riscv_coretb1__DOT__uut__DOT__u_hazard__DOT__mem_stall)))));
-        bufp->chgBit(oldp+141,(((1U == (IData)(vlSelfRef.riscv_coretb1__DOT__u_interconnect__DOT__state)) 
-                                & (1U == (IData)(vlSelfRef.riscv_coretb1__DOT__u_interconnect__DOT__latched_target)))));
+        bufp->chgBit(oldp+141,(vlSymsp->TOP__riscv_coretb1__DOT__bram_bus.req_valid));
         bufp->chgBit(oldp+142,(((0U == (IData)(vlSelfRef.riscv_coretb1__DOT__u_bram__DOT__state)) 
-                                & ((1U == (IData)(vlSelfRef.riscv_coretb1__DOT__u_interconnect__DOT__state)) 
-                                   & (1U == (IData)(vlSelfRef.riscv_coretb1__DOT__u_interconnect__DOT__latched_target))))));
+                                & (IData)(vlSymsp->TOP__riscv_coretb1__DOT__bram_bus.req_valid))));
         bufp->chgBit(oldp+143,((1U == (IData)(vlSelfRef.riscv_coretb1__DOT__u_bram__DOT__state))));
-        bufp->chgBit(oldp+144,(((1U == (IData)(vlSelfRef.riscv_coretb1__DOT__u_interconnect__DOT__state)) 
-                                & (2U == (IData)(vlSelfRef.riscv_coretb1__DOT__u_interconnect__DOT__latched_target)))));
+        bufp->chgBit(oldp+144,(((IData)(vlSymsp->TOP__riscv_coretb1__DOT__bram_bus.req_valid) 
+                                & (IData)(vlSelfRef.riscv_coretb1__DOT__u_interconnect__DOT__p_valid))));
         bufp->chgBit(oldp+145,(((1U == (IData)(vlSelfRef.riscv_coretb1__DOT__u_interconnect__DOT__state)) 
+                                & (2U == (IData)(vlSelfRef.riscv_coretb1__DOT__u_interconnect__DOT__latched_target)))));
+        bufp->chgBit(oldp+146,((((1U == (IData)(vlSelfRef.riscv_coretb1__DOT__u_interconnect__DOT__state)) 
+                                 & (2U == (IData)(vlSelfRef.riscv_coretb1__DOT__u_interconnect__DOT__latched_target))) 
+                                & (IData)(vlSelfRef.riscv_coretb1__DOT__u_interconnect__DOT__p_valid))));
+        bufp->chgBit(oldp+147,(((1U == (IData)(vlSelfRef.riscv_coretb1__DOT__u_interconnect__DOT__state)) 
                                 & (3U == (IData)(vlSelfRef.riscv_coretb1__DOT__u_interconnect__DOT__latched_target)))));
-        bufp->chgBit(oldp+146,(((1U == (IData)(vlSelfRef.riscv_coretb1__DOT__u_interconnect__DOT__state)) 
+        bufp->chgBit(oldp+148,((((1U == (IData)(vlSelfRef.riscv_coretb1__DOT__u_interconnect__DOT__state)) 
+                                 & (3U == (IData)(vlSelfRef.riscv_coretb1__DOT__u_interconnect__DOT__latched_target))) 
+                                & (IData)(vlSelfRef.riscv_coretb1__DOT__u_interconnect__DOT__p_valid))));
+        bufp->chgBit(oldp+149,(((1U == (IData)(vlSelfRef.riscv_coretb1__DOT__u_interconnect__DOT__state)) 
                                 & (4U == (IData)(vlSelfRef.riscv_coretb1__DOT__u_interconnect__DOT__latched_target)))));
+        bufp->chgBit(oldp+150,((((1U == (IData)(vlSelfRef.riscv_coretb1__DOT__u_interconnect__DOT__state)) 
+                                 & (4U == (IData)(vlSelfRef.riscv_coretb1__DOT__u_interconnect__DOT__latched_target))) 
+                                & (IData)(vlSelfRef.riscv_coretb1__DOT__u_interconnect__DOT__p_valid))));
     }
-    bufp->chgBit(oldp+147,(vlSelfRef.riscv_coretb1__DOT__clk));
-    bufp->chgBit(oldp+148,(vlSelfRef.riscv_coretb1__DOT__rst));
+    bufp->chgBit(oldp+151,(vlSelfRef.riscv_coretb1__DOT__clk));
+    bufp->chgBit(oldp+152,(vlSelfRef.riscv_coretb1__DOT__rst));
 }
 
 void Vriscv_coretb1___024root__trace_cleanup(void* voidSelf, VerilatedVcd* /*unused*/) {

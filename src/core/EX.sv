@@ -1,4 +1,4 @@
-
+import core_types::*;
 module ex_stage (
     input logic clk,
     input logic rst,
@@ -25,7 +25,6 @@ module ex_stage (
     input logic [31:0] forwarded_mem_data,  // Data coming from EX/MEM register 
     input logic [31:0] forwarded_wb_data    // Data coming from MEM/WB register 
 );
-    import core_types::*;
 
     logic [31:0] forwarded_rs1;
     logic [31:0] forwarded_rs2;

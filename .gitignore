@@ -1,13 +1,125 @@
-# Ignore Vivado temporary files
-*.jou
+# Build outputs
+build/
+*.vcd
+*.gtkw
+*.o
+*.a
+*.dat
+*.exe
+wavesignals.gtkw
+
+# Vivado project files
+project/
+*.xpr
+*.xpr.*
 *.log
+*.jou
 *.str
-.Xil/
+*.Xil/
 *.tmp/
 *.hw/
 *.ip_user_files/
 *.sim/
 *.runs/
 *.cache/
-# Ignore the actual local Vivado project file
-/vivado_local_proj/
+*.dcp
+*.veo
+*.vho
+*.xml
+*.xdc
+*_ooc.xdc
+*_sim_netlist.v
+*_sim_netlist.vhdl
+*_stub.v
+*_stub.vhdl
+vivado*.log
+vivado*.jou
+NAMED*
+sim_1/
+synth_1/
+impl_1/
+*.webtalk
+*.backup.log
+*.pb
+*.bin
+*.bit
+*.ltx
+
+# Vivado IP specific
+*.xci
+*.xcix
+*.xci.log
+*.xdc
+*.v_
+*.vh_
+
+# Documentation build files (LaTeX)
+docs/report/*.aux
+docs/report/*.fdb_latexmk
+docs/report/*.fls
+docs/report/*.nav
+docs/report/*.out
+docs/report/*.snm
+docs/report/*.synctex.gz
+docs/report/*.toc
+docs/report/*.log
+docs/report/*.lof
+docs/report/*.lot
+docs/report/*.idx
+docs/report/*.ind
+docs/report/*.ilg
+docs/report/*.bbl
+docs/report/*.blg
+docs/report/*.upa
+docs/report/*.upb
+docs/report/*.synctex
+docs/report/*.pdf  # Uncomment if you don't want to commit PDFs
+docs/report/__latexindent_temp/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Verilator
+obj_dir/
+V*
+*.mk
+__outputs__
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.bak
+*.backup
+
+# Simulation
+sim_build/
+verilator_build/
+
+# Coverage
+*.gcda
+*.gcno
+*.gcov
+coverage/
+htmlcov/
+
+# Temporary files
+*.tmp
+*.temp
+*.swap
+*.orig
+*_backup.sv
+*.old

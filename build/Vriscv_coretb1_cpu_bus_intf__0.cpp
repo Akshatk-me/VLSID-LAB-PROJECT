@@ -38,9 +38,10 @@ void Vriscv_coretb1_cpu_bus_intf___nba_sequent__TOP__riscv_coretb1__DOT__bram_bu
     Vriscv_coretb1__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     auto& vlSelfRef = std::ref(*vlSelf).get();
     // Body
+    vlSelfRef.req_valid = ((1U == (IData)(vlSymsp->TOP.riscv_coretb1__DOT__u_interconnect__DOT__state)) 
+                           & (1U == (IData)(vlSymsp->TOP.riscv_coretb1__DOT__u_interconnect__DOT__latched_target)));
     vlSelfRef.grant = ((0U == (IData)(vlSymsp->TOP.riscv_coretb1__DOT__u_bram__DOT__state)) 
-                       & ((1U == (IData)(vlSymsp->TOP.riscv_coretb1__DOT__u_interconnect__DOT__state)) 
-                          & (1U == (IData)(vlSymsp->TOP.riscv_coretb1__DOT__u_interconnect__DOT__latched_target))));
+                       & (IData)(vlSelfRef.req_valid));
 }
 
 std::string VL_TO_STRING(const Vriscv_coretb1_cpu_bus_intf* obj) {

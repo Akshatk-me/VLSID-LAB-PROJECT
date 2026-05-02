@@ -14,5 +14,4 @@ VL_ATTR_COLD void Vriscv_coretb1_cpu_bus_intf___ctor_var_reset(Vriscv_coretb1_cp
     vlSelf->grant = VL_SCOPED_RAND_RESET_I(1, __VscopeHash, 741988092961692266ull);
     vlSelf->rdata = VL_SCOPED_RAND_RESET_I(32, __VscopeHash, 10065165116613087284ull);
     vlSelf->rdata_valid = VL_SCOPED_RAND_RESET_I(1, __VscopeHash, 1482607620371764411ull);
-    vlSelf->ready = VL_SCOPED_RAND_RESET_I(1, __VscopeHash, 898948264233693212ull);
 }

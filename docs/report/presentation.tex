@@ -1,0 +1,202 @@
+\documentclass[10pt]{beamer}
+
+% Theme selection - 'metropolis' is very clean and modern
+\usetheme{metropolis}
+\usepackage{appendixnumberbeamer}
+\usepackage{booktabs}
+\usepackage{graphicx} % Added for standard image inclusion
+
+% Color Theme - Customizing to a professional VLSI Dark Gray
+\setbeamercolor{palette primary}{bg=darkgray, fg=white}
+
+\title{Design and Implementation of a RISC-V Based SoC}
+\subtitle{VLSI Design Lab Final Project}
+\date{\today}
+\author{Group 07}
+\institute{Department of Electrical Engineering}
+
+\begin{document}
+
+\maketitle
+
+% Slide 1: Architecture of RISC-V and SoC
+\begin{frame}{Architecture of RISC-V Core and SoC}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{Core Architecture:}
+        \begin{itemize}
+            \item RV32I ISA (32-bit Integer)
+            \item 5-Stage Pipeline (F-D-E-M-W)
+        \end{itemize}
+        \vspace{1em}
+        \textbf{SoC Level Integration:}
+        \begin{itemize}
+            \item AHB/APB Bus Interconnect
+            \item Peripherals: GPIO, UART, Timer
+        \end{itemize}
+        
+        \column{0.5\textwidth}
+        \begin{block}{Architecture Diagram}
+            % To add an image here later, uncomment the line below:
+            % \includegraphics[width=0.9\textwidth]{your_image.png}
+            \textit{[Insert Top-Level Block Diagram or RTL Schematic here]}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+% Slide 2: Implementation Details
+\begin{frame}{Implementation Methodology}
+    \begin{itemize}
+        \item \textbf{Hardware Description Language:} Verilog-2001
+        \item \textbf{Verification Environment:} SystemVerilog Testbench
+        \item \textbf{Target FPGA:} Xilinx Artix-7 (XC7A100T)
+        \item \textbf{Target ASIC Node:} TSMC 65nm / SkyWater 130nm
+        \item \textbf{Synthesis Tools:} Vivado (FPGA), Cadence Genus (ASIC)
+        \item \textbf{Place \& Route:} Cadence Innovus (ASIC)
+    \end{itemize}
+\end{frame}
+
+% Slide 3: FPGA Timing Results
+\begin{frame}{FPGA Timing Simulation Results}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{Post-Synthesis Timing:}
+        \begin{itemize}
+            \item WNS (Worst Negative Slack): [Value] ns
+            \item WHS (Worst Hold Slack): [Value] ns
+        \end{itemize}
+        
+        \vspace{1em}
+        \textbf{Post-Implementation Timing:}
+        \begin{itemize}
+            \item WNS: [Value] ns
+            \item WHS: [Value] ns
+            \item \textbf{Max Frequency ($F_{max}$):} [Value] MHz
+        \end{itemize}
+        
+        \column{0.5\textwidth}
+        \begin{block}{Timing Waveforms}
+            % \includegraphics[width=\textwidth]{timing_wave.png}
+            \textit{[Insert Vivado Timing Summary screenshot or Simulation Waveform]}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+% Slide 4: FPGA Utilization
+\begin{frame}{FPGA Utilization Summary}
+    \centering
+    \begin{tabular}{lccc}
+        \toprule
+        Resource & Used & Available & Utilization (\%) \\
+        \midrule
+        Slice LUTs & [Value] & 63,400 & [\%] \\
+        Slice Registers & [Value] & 126,800 & [\%] \\
+        Block RAM (36Kb) & [Value] & 135 & [\%] \\
+        DSP48E1 & [Value] & 240 & [\%] \\
+        I/O Buffers & [Value] & 210 & [\%] \\
+        \bottomrule
+    \end{tabular}
+    
+    \vspace{2em}
+    \textit{Note: Resource numbers extracted from post-placement utilization report.}
+\end{frame}
+
+% Slide 5: Modifications for ASIC
+\begin{frame}{Modifications for ASIC Transition}
+    \begin{itemize}
+        \item \textbf{Memory Replacement:} Replaced FPGA-specific Block RAMs (BRAM) with Standard-Cell SRAM Macros generated via Memory Compiler.
+        \item \textbf{Clock Tree Synthesis (CTS):} Removed FPGA MMCMs. Inserted Integrated Clock Gating (ICG) cells and standard buffers to minimize clock skew.
+        \item \textbf{Reset Synchronization:} Implemented dual-flop synchronizers for asynchronous reset de-assertion.
+        \item \textbf{I/O Pads:} Instantiated specific I/O Pad cells (Power, Ground, Bidirectional) required for the ASIC pad ring.
+    \end{itemize}
+\end{frame}
+
+% Slide 6: ASIC Timing Simulation (Post-PNR)
+\begin{frame}{ASIC Post-Synthesis \& Post-PNR Results}
+    \textbf{Post-Synthesis (Genus):}
+    \begin{itemize}
+        \item Setup Slack: [Value] ps
+        \item Hold Slack: [Value] ps
+    \end{itemize}
+    
+    \vspace{1em}
+    \textbf{Post-PNR (Innovus):}
+    \begin{itemize}
+        \item Setup Slack: [Value] ps
+        \item Hold Slack: [Value] ps
+        \item Core Frequency: [Value] MHz
+        \item Operating Voltage: 1.2 V
+    \end{itemize}
+\end{frame}
+
+% Slide 7: ASIC Area, Timing, and Power
+\begin{frame}{ASIC Report: Area, Power, and Timing}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{Area Summary:}
+        \begin{itemize}
+            \item Standard Cell Area: [Value] $\mu m^2$
+            \item Macro Area: [Value] $\mu m^2$
+            \item Total Chip Area: [Value] $\mu m^2$
+            \item Core Density: [Value] \%
+        \end{itemize}
+        
+        \column{0.5\textwidth}
+        \textbf{Power Summary:}
+        \begin{itemize}
+            \item Dynamic Power: [Value] mW
+            \item Leakage Power: [Value] $\mu$W
+            \item Total Power: [Value] mW
+        \end{itemize}
+    \end{columns}
+    
+    \vspace{1em}
+    \begin{block}{GDSII Layout}
+        % \includegraphics[width=0.6\textwidth]{gdsii_layout.png}
+        \centering
+        \textit{[Insert your routed ASIC Layout screenshot here]}
+    \end{block}
+\end{frame}
+
+% Slide 8: Video Demo Links
+\begin{frame}{Video Demonstration}
+    \begin{block}{1. FPGA Hardware Implementation}
+        Demonstrating the RISC-V SoC executing code on the Artix-7 board, showcasing UART communication and GPIO toggling. \\
+        \vspace{0.5em}
+        \textbf{Link:} \href{https://youtube.com/yourlink}{\underline{Watch FPGA Demo}}
+    \end{block}
+    
+    \vspace{1em}
+    \begin{block}{2. ASIC Simulation \& GDSII Walkthrough}
+        Showcasing the Post-PNR Gate-Level Simulation waveforms and a walkthrough of the final routed layout. \\
+        \vspace{0.5em}
+        \textbf{Link:} \href{https://youtube.com/yourlink}{\underline{Watch ASIC Walkthrough}}
+    \end{block}
+\end{frame}
+
+% Slide 9: Contribution Table
+\begin{frame}{Detailed Contribution Table}
+    \centering
+    \footnotesize % Safely scales the text down without causing \resizebox errors
+    \begin{tabular}{p{2.5cm} p{4cm} p{3.5cm}}
+        \toprule
+        \textbf{Member Name} & \textbf{Responsibility} & \textbf{Key Deliverables} \\
+        \midrule
+        Member 1 & Core Architecture \& RTL & Datapath, Control Unit, ALU \\
+        \addlinespace
+        Member 2 & FPGA Implementation & Synthesis, Bitstream, UART \\
+        \addlinespace
+        Member 3 & ASIC Synthesis & Genus flow, constraints, DFT \\
+        \addlinespace
+        Member 4 & ASIC PNR & Innovus routing, CTS, GDSII \\
+        \bottomrule
+    \end{tabular}
+\end{frame}
+
+\begin{frame}[standout]
+    Thank You \\
+    \vspace{1em}
+    \normalsize Questions?
+\end{frame}
+
+\end{document}

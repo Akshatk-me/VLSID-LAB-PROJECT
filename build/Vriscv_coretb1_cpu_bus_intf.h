@@ -18,7 +18,6 @@ class alignas(VL_CACHE_LINE_BYTES) Vriscv_coretb1_cpu_bus_intf final {
     CData/*0:0*/ req_valid;
     CData/*0:0*/ grant;
     CData/*0:0*/ rdata_valid;
-    CData/*0:0*/ ready;
     IData/*31:0*/ rdata;
 
     // INTERNAL VARIABLES

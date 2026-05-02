@@ -5,7 +5,7 @@
 # Variables
 VIVADO_BATCH = vivado -nolog -nojournal -mode batch -source
 VIVADO_GUI   = vivado -nolog -nojournal -mode gui -source
-SCRIPT       = build.tcl
+SCRIPT       = buildsv.tcl
 
 # Phony targets (not actual files)
 .PHONY: help build gui sim clean
